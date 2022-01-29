@@ -21,11 +21,11 @@ public class Movie {
     static String testMethod(int movieId){
 
         String url = "https://api.themoviedb.org/3/movie/" + movieId + "?api_key=" + apiKey;
-        JsonRequest.getInstance().returnRequest(url, url, new CustomListener<String>() {
+        JsonRequest.getInstance().returnRequest(url, new CustomListener<String>() {
             @Override
             public void getResult(String result) {
                 if (!result.equals("Error 69")){
-                    Log.d("Movie", "Reslt: " + result);
+                    Log.d("Movie", "Result: " + result);
                 }
             }
         });

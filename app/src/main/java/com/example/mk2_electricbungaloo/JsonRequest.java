@@ -45,12 +45,9 @@ public class JsonRequest {
         return instance;
     }
 
-    public void returnRequest(Object param1, String url, final CustomListener<String> listener){
+    public void returnRequest(String url, final CustomListener<String> listener){
 
-        Map<String, Object> jsonParams = new HashMap<>();
-        jsonParams.put("param1", param1);
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, new JSONObject(jsonParams),
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, new JSONObject(),
                 new Response.Listener<JSONObject>()
                 {
                     @Override
