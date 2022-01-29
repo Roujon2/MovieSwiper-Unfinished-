@@ -1,18 +1,10 @@
 package com.example.mk2_electricbungaloo;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import java.util.ArrayList;
-import java.util.Random;
+import android.util.Log;
 
 public class Movie {
 
-    private static final String apiKey = "telacreistewey";
+    private static final String apiKey = "CAMBIARESTO";
 
     // Movie attributes
     int movieId;
@@ -26,6 +18,22 @@ public class Movie {
 
     }
 
+    static String testMethod(int movieId){
+
+        String url = "https://api.themoviedb.org/3/movie/" + movieId + "?api_key=" + apiKey;
+        JsonRequest.getInstance().returnRequest(url, url, new CustomListener<String>() {
+            @Override
+            public void getResult(String result) {
+                if (!result.equals("Error 69")){
+                    Log.d("Movie", "Reslt: " + result);
+                }
+            }
+        });
+
+        return "asdf";
+    }
+
+/*
     // Method that checks if the movie is available on a specific provider, in a specific region
     public boolean isAvailable(String watchProvider, String region){
 
@@ -66,6 +74,7 @@ public class Movie {
 
         return false;
     }
+
 
     // Method that gets the movie info from the id and returns a movie object
     static Movie getMovie(int id){
@@ -296,5 +305,6 @@ public class Movie {
         return Integer.compare(this.movieId, movie.movieId) == 0;
 
     }
+*/
 
 }

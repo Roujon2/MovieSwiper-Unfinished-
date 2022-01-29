@@ -1,61 +1,80 @@
 package com.example.mk2_electricbungaloo;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import android.content.Context;
+import android.util.Log;
 
-// ALL THIS I COPIED FROM A TUTORIAL I DON'T KNOW WHAT IT DOES
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class JsonRequest {
 
-    private static HttpURLConnection connection;
+    private static final String TAG = "JsonRequest";
+    private static JsonRequest instance = null;
 
-    static String requestInfo(URL url){
+    // For Volley API
+    public RequestQueue requestQueue;
 
-        BufferedReader reader;
-        String line;
-        StringBuffer responseContent = new StringBuffer();
-
-        try {
-
-            connection = (HttpURLConnection) url.openConnection();
-
-            // Request setup
-            connection.setRequestMethod("GET");
-            connection.setConnectTimeout(5000);
-            connection.setReadTimeout(5000);
-
-            int status = connection.getResponseCode();
-            //System.out.println(status); TO CHECK CONNECTION STATUS
-
-
-            if(status > 299){
-                reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-                while((line = reader.readLine()) != null){
-                    responseContent.append(line);
-                }
-                reader.close();
-            }else{
-                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                while((line = reader.readLine()) != null){
-                    responseContent.append(line);
-                }
-                reader.close();
-            }
-
-            return responseContent.toString();
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            connection.disconnect();
-        }
-        return "Error: 69";
+    private JsonRequest(Context context){
+        requestQueue = Volley.newRequestQueue(context.getApplicationContext());
     }
 
-}
+    public static synchronized JsonRequest getInstance(Context context){
+        if (null == instance){
+            instance = new JsonRequest(context);
+        }
+        return instance;
+    }
 
+    //this is so you don't need to pass context each time
+    public static synchronized JsonRequest getInstance()
+    {
+        if (null == instance)
+        {
+            throw new IllegalStateException(JsonRequest.class.getSimpleName() +
+                    " is not initialized, call getInstance(...) first");
+        }
+        return instance;
+    }
+
+    public void returnRequest(Object param1, String url, final CustomListener<String> listener){
+
+        Map<String, Object> jsonParams = new HashMap<>();
+        jsonParams.put("param1", param1);
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, new JSONObject(jsonParams),
+                new Response.Listener<JSONObject>()
+                {
+                    @Override
+                    public void onResponse(JSONObject response)
+                    {
+                        Log.d(TAG + ": ", "somePostRequest Response : " + response.toString());
+                        if(!"null".equals(response.toString()))
+                            listener.getResult(response.toString());
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error)
+                    {
+                        if (null != error.networkResponse)
+                        {
+                            Log.d(TAG + ": ", "Error Response code: " + error.networkResponse.statusCode);
+                            listener.getResult("Error 69");
+                        }
+                    }
+                });
+
+        requestQueue.add(request);
+
+    }
+}
