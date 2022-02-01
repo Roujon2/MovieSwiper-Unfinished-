@@ -1,10 +1,15 @@
 package com.example.mk2_electricbungaloo;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
+
+import java.io.File;
 
 public class Movie {
 
-    private static final String apiKey = "CAMBIARESTO";
+    private static final String apiKey = "3b9e486cd190cdf10422acb6459dfc5f";
 
     // Movie attributes
     int movieId;
@@ -18,19 +23,54 @@ public class Movie {
 
     }
 
-    static String testMethod(int movieId){
 
-        String url = "https://api.themoviedb.org/3/movie/" + movieId + "?api_key=" + apiKey;
+    // Method copied from stackoverflow to clear and delete files
+    public static void clearSharedPreferences(Context ctx){
+        File dir = new File(ctx.getFilesDir().getParent() + "/shared_prefs/");
+        String[] children = dir.list();
+        for (int i = 0; i < children.length; i++) {
+            // clear each preference file
+            ctx.getSharedPreferences(children[i].replace(".xml", ""), Context.MODE_PRIVATE).edit().clear().commit();
+            //delete the file
+            new File(dir, children[i]).delete();
+        }
+    }
+
+    static String testMethod(int id){
+
+        clearSharedPreferences(MainActivity.getContext());
+
+        String url = "https://api.themoviedb.org/3/movie/" + id + "?api_key=" + apiKey;
+
+        // Overrides the listener to which the response is returned to
         JsonRequest.getInstance().returnRequest(url, new CustomListener<String>() {
             @Override
             public void getResult(String result) {
                 if (!result.equals("Error 69")){
                     Log.d("Movie", "Result: " + result);
+
+                    // Creates the shared preferences file and edits the JSON response into it
+                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.getContext());
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("Response", result);
+                    editor.apply();
+
+                    // Here put the code for the callback/listener thing (we can use the CustomListener.java interface)
+
                 }
             }
         });
 
-        return "asdf";
+        // Accesses the file to read the response
+        SharedPreferences m = PreferenceManager.getDefaultSharedPreferences(MainActivity.getContext());
+        String response = m.getString("Response", "");
+        Log.d("Movie out", "Response: " + response);
+
+        // Calls the clearing method to delete the file
+        clearSharedPreferences(MainActivity.getContext());
+
+        // Returns the saved string
+        return response;
     }
 
 /*

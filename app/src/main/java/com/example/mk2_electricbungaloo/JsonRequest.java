@@ -1,6 +1,8 @@
 package com.example.mk2_electricbungaloo;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.android.volley.Request;
