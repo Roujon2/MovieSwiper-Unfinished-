@@ -9,7 +9,7 @@ import java.io.File;
 
 public class Movie {
 
-    private static final String apiKey = "3b9e486cd190cdf10422acb6459dfc5f";
+    private static final String apiKey = "abc";
 
     // Movie attributes
     int movieId;
