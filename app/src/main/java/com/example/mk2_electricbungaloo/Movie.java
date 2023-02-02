@@ -73,7 +73,7 @@ public class Movie {
         return response;
     }
 
-/*
+
     // Method that checks if the movie is available on a specific provider, in a specific region
     public boolean isAvailable(String watchProvider, String region){
 
@@ -345,6 +345,6 @@ public class Movie {
         return Integer.compare(this.movieId, movie.movieId) == 0;
 
     }
-*/
+
 
 }
